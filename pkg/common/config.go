@@ -46,11 +46,11 @@ func retrieveComputeInstanceMetadata() (metadata ComputeInstanceMetadata, err er
 func retrieveenvdata() JsonData {
 
 	config := JsonData{
-		Name:              os.Getenv("Name"),
-		SubscriptionID:    os.Getenv("SubscriptionID"),
-		Location:          os.Getenv("Location"),
-		ResourceGroupName: os.Getenv("ResourceGroupName"),
-		Environment:       os.Getenv("Environment"),
+		Name:              os.Getenv("NAME"),
+		SubscriptionID:    os.Getenv("SUBSCRIPTIONID"),
+		Location:          os.Getenv("LOCATION"),
+		ResourceGroupName: os.Getenv("RESOURCEGROUPNAME"),
+		Environment:       os.Getenv("ENVIRONMENT"),
 	}
 	return config
 }
