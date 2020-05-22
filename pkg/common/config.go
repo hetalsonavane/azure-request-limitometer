@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"io/ioutil"
 	"net/http"
+	"os"
 
 	"github.com/Azure/go-autorest/autorest/azure"
 )
@@ -42,12 +43,21 @@ func retrieveComputeInstanceMetadata() (metadata ComputeInstanceMetadata, err er
 	return
 }
 
+func retrieveenvdata() JsonData {
+
+	config := JsonData{
+		Name:              os.Getenv("Name"),
+		SubscriptionID:    os.Getenv("SubscriptionID"),
+		Location:          os.Getenv("Location"),
+		ResourceGroupName: os.Getenv("ResourceGroupName"),
+		Environment:       os.Getenv("Environment"),
+	}
+	return config
+}
+
 // LoadConfig Returns a Config struct created from Environment Variables
 func LoadConfig() (config Config) {
-	m, err := retrieveComputeInstanceMetadata()
-	if err != nil {
-		err = fmt.Errorf("unable to load the config: %v", err)
-	}
+	m := retrieveenvdata()
 
 	env, err := azure.EnvironmentFromName(m.Environment)
 	if err != nil {
