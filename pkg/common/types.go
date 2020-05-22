@@ -35,3 +35,12 @@ type Config struct {
 	AzureEnvironment    string
 	EnvironmentEndpoint string
 }
+
+//JsonData returns a data for loading the environment Variable
+type JsonData struct {
+	Name              string
+	SubscriptionID    string
+	Location          string
+	ResourceGroupName string
+	Environment       string
+}

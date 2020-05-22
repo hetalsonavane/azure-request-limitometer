@@ -54,7 +54,7 @@ func NewClient(config Config) (client AzureClient) {
 
 	return
 }
-
+ 
 // GetVM Returns a VirtualMachine object.
 func (c AzureClient) GetVM(vmname string) (vm compute.VirtualMachine) {
 	ctx, cancel := context.WithTimeout(context.Background(), 6000*time.Second)

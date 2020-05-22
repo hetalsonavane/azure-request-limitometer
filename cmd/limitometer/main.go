@@ -6,9 +6,9 @@ import (
 	"os"
 	"strings"
 
-	"github.com/Nuance-Mobility/azure-request-limitometer/pkg/common"
-	"github.com/Nuance-Mobility/azure-request-limitometer/pkg/outputs"
 	"github.com/golang/glog"
+	"github.com/hetalsonavane/azure-request-limitometer/pkg/common"
+	"github.com/hetalsonavane/azure-request-limitometer/pkg/outputs"
 
 	flag "github.com/spf13/pflag"
 )
