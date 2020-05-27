@@ -1,26 +1,24 @@
 package main
 
 import (
+	"encoding/json"
 	"fmt"
 	"log"
 	"os"
-	"strings"
 
-	"github.com/golang/glog"
-	"github.com/hetalsonavane/azure-request-limitometer/pkg/common"
-	"github.com/hetalsonavane/azure-request-limitometer/pkg/outputs"
+	"azure-request-limitometer/internal/config"
+	"azure-request-limitometer/pkg/common"
 
 	flag "github.com/spf13/pflag"
 )
+
+var azureClient = common.Client
 
 const (
 	cliName        = "limitometer"
 	cliDescription = "Collects the number of remaining requests in Azure Resource Manager"
 	cliVersion     = "2.0.0"
 )
-
-var config = common.Conf
-var azureClient = common.Client
 
 var (
 	nodename = flag.String("node", "", "Valid node in the resource group to create compute queries. Environment Variable: NODE_NAME")
@@ -51,6 +49,10 @@ func main() {
 		printUsage()
 	}
 
+	if err := config.ParseEnvironment(); err != nil {
+		log.Fatalf("failed to parse environment: %s\n", err)
+	}
+
 	env, exists := os.LookupEnv("NODE_NAME")
 	if exists {
 		*nodename = env
@@ -58,13 +60,16 @@ func main() {
 
 	log.Printf("Starting limitometer with %s as target VM", *nodename)
 	requestsRemaining := getRequestsRemaining(*nodename)
-
-	log.Printf("Writing to database: %s", *target)
-	if strings.ToLower(*target) == "influxdb" {
-		outputs.WriteOutputInflux(requestsRemaining, "requestRemaining")
-	} else if strings.ToLower(*target) == "pushgateway" {
-		outputs.WriteOutputPushGateway(requestsRemaining)
-	} else {
-		glog.Exit("Did not provide a output through -output flag. Exiting.")
-	}
+	cjson, _ := json.Marshal(requestsRemaining)
+	log.Printf("%s\n", cjson)
+	/*
+		log.Printf("Writing to database: %s", *target)
+		if strings.ToLower(*target) == "influxdb" {
+			outputs.WriteOutputInflux(requestsRemaining, "requestRemaining")
+		} else if strings.ToLower(*target) == "pushgateway" {
+			outputs.WriteOutputPushGateway(requestsRemaining)
+		} else {
+			glog.Exit("Did not provide a output through -output flag. Exiting.")
+		}
+	*/
 }

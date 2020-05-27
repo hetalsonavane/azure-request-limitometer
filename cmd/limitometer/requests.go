@@ -1,11 +1,14 @@
 package main
 
 import (
+	"context"
+	"fmt"
 	"log"
 	"net/http"
 	"regexp"
 	"strconv"
 	"strings"
+	"time"
 
 	"github.com/Azure/go-autorest/autorest"
 )
@@ -24,14 +27,24 @@ var subIDReadsHeader = "SubIDReads"
 func getRequestsRemaining(nodename string) (requestsRemaining map[string]int) {
 	requestsRemaining = make(map[string]int)
 
-	responses := []autorest.Response{
-		azureClient.GetVM(nodename).Response,
-		azureClient.GetAllVM().Response().Response,
-		azureClient.PutVM(nodename),
-		azureClient.GetNicFromVMName(nodename).Response,
-		azureClient.GetAllNics().Response().Response,
+	ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
+	defer cancel()
+
+	vm, err := azureClient.GetVM(ctx, nodename)
+	fmt.Printf("%+v\n", vm)
+	if err != nil {
+		log.Printf("failed to get vm: %s\n", err)
 	}
 
+	responses := []autorest.Response{
+		vm.Response,
+
+		//azureClient.GetAllVM().Response().Response,
+		//azureClient.PutVM(nodename),
+		//azureClient.GetNicFromVMName(nodename).Response,
+		//azureClient.GetAllNics().Response().Response,
+	}
+	fmt.Println(responses)
 	for _, response := range responses {
 		if response.StatusCode != 200 {
 			log.Fatalf("Response did not return a StatusCode of 200. StatusCode: %d", response.StatusCode)
