@@ -36,7 +36,6 @@ type Config struct {
 	EnvironmentEndpoint string
 }
 
-//JsonData returns a data for loading the environment Variable
 type JsonData struct {
 	Name              string
 	SubscriptionID    string

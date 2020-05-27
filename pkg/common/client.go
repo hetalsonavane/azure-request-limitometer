@@ -4,57 +4,51 @@ import (
 	"context"
 	"fmt"
 	"log"
-	"net/http"
-	"os"
-	"strings"
-	"time"
-
+	
+	"github.com/hetalsonavane/azure-request-limitometer/internal/config"
 	"github.com/Azure/azure-sdk-for-go/profiles/latest/compute/mgmt/compute"
-	"github.com/Azure/azure-sdk-for-go/profiles/latest/network/mgmt/network"
-	"github.com/Azure/go-autorest/autorest"
-	"github.com/Azure/go-autorest/autorest/azure"
 	"github.com/Azure/go-autorest/autorest/azure/auth"
-	"github.com/golang/glog"
 )
 
 // AzureClient This is an authorized client for Azure communication.
 type AzureClient struct {
 	compute.VirtualMachinesClient
-	compute.DisksClient
-	compute.VirtualMachineScaleSetsClient
-	network.InterfacesClient
+	//compute.DisksClient
+	//compute.VirtualMachineScaleSetsClient
+	//network.InterfacesClient
+}
+
+func getVMClient() compute.VirtualMachinesClient {
+	fmt.Println("vmclient")
+	fmt.Println(config.SubscriptionID())
+	vmClient := compute.NewVirtualMachinesClient("645f4d1b-d55d-4dba-944d-3be470c458d2")
+	a, err := auth.NewAuthorizerFromEnvironment()
+	if err != nil {
+		log.Fatalf("failed to create authorizer from environment: %s\n", err)
+	}
+
+	vmClient.Authorizer = a
+	vmClient.AddToUserAgent(config.UserAgent())
+	fmt.Printf("%+v\n", vmClient)
+	return vmClient
+}
+
+func (a AzureClient) GetVM(ctx context.Context, vmName string) (compute.VirtualMachine, error) {
+	return a.Get(ctx, config.GroupName(), vmName, compute.InstanceView)
+
 }
 
 // NewClient Initialized an authorized Azure client
-func NewClient(config Config) (client AzureClient) {
+func NewClient() (client AzureClient) {
+	fmt.Println(config.ClientID())
 	client = AzureClient{
-		compute.NewVirtualMachinesClientWithBaseURI(config.EnvironmentEndpoint, config.SubscriptionID),
-		compute.NewDisksClientWithBaseURI(config.EnvironmentEndpoint, config.SubscriptionID),
-		compute.NewVirtualMachineScaleSetsClientWithBaseURI(config.EnvironmentEndpoint, config.SubscriptionID),
-		network.NewInterfacesClientWithBaseURI(config.EnvironmentEndpoint, config.SubscriptionID),
+		getVMClient(),
 	}
-
-	// Authorizing with Managed Service Identity
-	err := os.Setenv("AZURE_ENVIRONMENT", config.AzureEnvironment)
-	if err != nil {
-		log.Panicf("Unable to set Azure environment: %v", err)
-	}
-	authorizer, err := auth.NewAuthorizerFromEnvironment()
-	if err == nil {
-		client.VirtualMachinesClient.Authorizer = authorizer
-		client.DisksClient.Authorizer = authorizer
-		client.VirtualMachineScaleSetsClient.Authorizer = authorizer
-		client.InterfacesClient.Authorizer = authorizer
-	}
-
-	client.VirtualMachinesClient.RetryAttempts = 1
-	client.DisksClient.RetryAttempts = 1
-	client.VirtualMachineScaleSetsClient.RetryAttempts = 1
-	client.InterfacesClient.RetryAttempts = 1
 
 	return
 }
- 
+
+/*
 // GetVM Returns a VirtualMachine object.
 func (c AzureClient) GetVM(vmname string) (vm compute.VirtualMachine) {
 	ctx, cancel := context.WithTimeout(context.Background(), 6000*time.Second)
@@ -65,9 +59,13 @@ func (c AzureClient) GetVM(vmname string) (vm compute.VirtualMachine) {
 		log.Panicf("failed to get VM: %v", err)
 	}
 
+	fmt.Println("hello I am in Get ")
+
 	return
 }
+*/
 
+/*
 // GetAllVM Returns a ListResultPage of all VMs in the ResourceGroup of the Config
 func (c AzureClient) GetAllVM() (result compute.VirtualMachineListResultPage) {
 	ctx, cancel := context.WithTimeout(context.Background(), 6000*time.Second)
@@ -81,12 +79,13 @@ func (c AzureClient) GetAllVM() (result compute.VirtualMachineListResultPage) {
 	return
 }
 
+
 // PutVM returns the Virtual Machine object
 func (c AzureClient) PutVM(vmname string) (res autorest.Response) {
 	ctx, cancel := context.WithTimeout(context.Background(), 6000*time.Second)
 	defer cancel()
 
-	node := c.GetVM(vmname)
+  node := c.GetVM(vmname)
 
 	req, err := c.VirtualMachinesClient.CreateOrUpdatePreparer(ctx, Conf.ResourceGroup, vmname, node)
 	if err != nil {
@@ -212,3 +211,4 @@ func getLastSegment(ID string) (string, error) {
 
 	return name, nil
 }
+*/

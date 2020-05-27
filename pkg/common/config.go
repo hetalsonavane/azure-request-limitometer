@@ -1,10 +1,7 @@
 package common
 
 import (
-	"encoding/json"
 	"fmt"
-	"io/ioutil"
-	"net/http"
 	"os"
 
 	"github.com/Azure/go-autorest/autorest/azure"
@@ -14,6 +11,7 @@ const apiVersion = "2018-10-01"
 const azureInstanceMetadataEndpoint = "http://169.254.169.254/metadata/instance"
 
 // Queries the Azure Instance Metadata Service for the instance's compute metadata
+/*
 func retrieveComputeInstanceMetadata() (metadata ComputeInstanceMetadata, err error) {
 	c := &http.Client{}
 
@@ -42,7 +40,7 @@ func retrieveComputeInstanceMetadata() (metadata ComputeInstanceMetadata, err er
 
 	return
 }
-
+*/
 func retrieveenvdata() JsonData {
 
 	config := JsonData{
