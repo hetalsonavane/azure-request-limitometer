@@ -16,7 +16,7 @@ import (
 	"github.com/Azure/go-autorest/autorest/azure/auth"
 )
 
-var subscriptionID = "645f4d1b-d55d-4dba-944d-3be470c458d2"
+
 
 // AzureClient This is an authorized client for Azure communication.
 type AzureClient struct {
