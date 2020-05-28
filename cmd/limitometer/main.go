@@ -1,13 +1,15 @@
 package main
 
 import (
-	"encoding/json"
 	"fmt"
 	"log"
 	"os"
+	"strings"
 
-	"github.com/hetalsonavane/azure-request-limitometer/internal/config"
-	"github.com/hetalsonavane/azure-request-limitometer/pkg/common"
+	"azure-request-limitometer/internal/config"
+	"azure-request-limitometer/pkg/common"
+	"azure-request-limitometer/pkg/outputs"
+
 	flag "github.com/spf13/pflag"
 )
 
@@ -59,16 +61,16 @@ func main() {
 
 	log.Printf("Starting limitometer with %s as target VM", *nodename)
 	requestsRemaining := getRequestsRemaining(*nodename)
-	cjson, _ := json.Marshal(requestsRemaining)
-	log.Printf("%s\n", cjson)
-	/*
-		log.Printf("Writing to database: %s", *target)
-		if strings.ToLower(*target) == "influxdb" {
-			outputs.WriteOutputInflux(requestsRemaining, "requestRemaining")
-		} else if strings.ToLower(*target) == "pushgateway" {
-			outputs.WriteOutputPushGateway(requestsRemaining)
-		} else {
-			glog.Exit("Did not provide a output through -output flag. Exiting.")
-		}
-	*/
+	//cjson, _ := json.Marshal(requestsRemaining)
+	//log.Printf("%s\n", cjson)
+
+	log.Printf("Writing to database: %s", *target)
+	if strings.ToLower(*target) == "influxdb" {
+		outputs.WriteOutputInflux(requestsRemaining, "requestRemaining")
+	} else if strings.ToLower(*target) == "pushgateway" {
+		outputs.WriteOutputPushGateway(requestsRemaining)
+	} else {
+		log.Printf("Did not provide a output through -output flag. Exiting.")
+	}
+
 }
