@@ -30,34 +30,31 @@ func getRequestsRemaining(nodename string) (requestsRemaining map[string]int) {
 	ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
 	defer cancel()
 
-	vm, err := azureClient.GetVM(ctx, nodename)
-
-	fmt.Printf("%+v\n", vm)
+	Getvm, err := azureClient.GetVM(ctx, nodename)
 	if err != nil {
 		log.Printf("failed to get vm: %s\n", err)
 	}
 
-	nic, err := azureClient.GetNicFromVMName(nodename)
+	Getnic, err := azureClient.GetNicFromVMName(nodename)
 	if err != nil {
 		log.Printf("failed to get nic: %s\n", err)
 	}
 
-	getallvm := azureClient.GetAllVM()
-	//	putvm := azureClient.PutVM(nodename)
-	getallnic := azureClient.GetAllNics()
-	lb, err := azureClient.GetLbFromVMName(nodename)
+	GetAllVM := azureClient.GetAllVM()
+	//putvm := azureClient.PutVM(nodename)
+	GetAllNic := azureClient.GetAllNics()
+	lb, err := azureClient.GetAllLoadBalancer()
 	if err != nil {
 		log.Printf("failed to get nic: %s\n", err)
 	}
 	responses := []autorest.Response{
-		vm.Response,
-		nic.Response,
-		lb.Response,
-		getallvm.Response().Response,
-		getallnic.Response().Response,
 
+		Getvm.Response,
+		Getnic.Response,
+		lb.Response().Response,
+		GetAllVM.Response().Response,
+		GetAllNic.Response().Response,
 		//putvm,
-		//azureClient.GetAllNics().Response().Response,
 	}
 	fmt.Println(responses)
 
