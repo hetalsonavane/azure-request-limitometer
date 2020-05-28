@@ -43,7 +43,7 @@ func getRequestsRemaining(nodename string) (requestsRemaining map[string]int) {
 	GetAllVM := azureClient.GetAllVM()
 	//putvm := azureClient.PutVM(nodename)
 	GetAllNic := azureClient.GetAllNics()
-	lb, err := azureClient.GetAllLoadBalancer()
+	Getlb, err := azureClient.GetAllLoadBalancer()
 	if err != nil {
 		log.Printf("failed to get nic: %s\n", err)
 	}
@@ -51,7 +51,7 @@ func getRequestsRemaining(nodename string) (requestsRemaining map[string]int) {
 
 		Getvm.Response,
 		Getnic.Response,
-		lb.Response().Response,
+		Getlb.Response().Response,
 		GetAllVM.Response().Response,
 		GetAllNic.Response().Response,
 		//putvm,
