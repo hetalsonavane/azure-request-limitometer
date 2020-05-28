@@ -1,7 +1,7 @@
 package common
 
 import (
-	"azure-request-limitometer/internal/config"
+	"github.com/hetalsonavane/azure-request-limitometer/internal/config"
 	"context"
 	"fmt"
 	"log"

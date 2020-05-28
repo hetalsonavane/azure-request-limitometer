@@ -6,9 +6,9 @@ import (
 	"os"
 	"strings"
 
-	"azure-request-limitometer/internal/config"
-	"azure-request-limitometer/pkg/common"
-	"azure-request-limitometer/pkg/outputs"
+	"github.com/hetalsonavane/azure-request-limitometer/internal/config"
+	"github.com/hetalsonavane/azure-request-limitometer/pkg/common"
+	"github.com/hetalsonavane/azure-request-limitometer/pkg/outputs"
 
 	flag "github.com/spf13/pflag"
 )
