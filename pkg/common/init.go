@@ -1,11 +1,10 @@
 package common
 
-// Conf Loaded Configuration from azure.json
+// Conf Loaded subscriptionId
 
 // Client Authorized Azure Client
 var Client AzureClient
 
 func init() {
-
 	Client = NewClient()
 }

@@ -31,20 +31,36 @@ func getRequestsRemaining(nodename string) (requestsRemaining map[string]int) {
 	defer cancel()
 
 	vm, err := azureClient.GetVM(ctx, nodename)
+
 	fmt.Printf("%+v\n", vm)
 	if err != nil {
 		log.Printf("failed to get vm: %s\n", err)
 	}
 
+	nic, err := azureClient.GetNicFromVMName(nodename)
+	if err != nil {
+		log.Printf("failed to get nic: %s\n", err)
+	}
+
+	getallvm := azureClient.GetAllVM()
+	//	putvm := azureClient.PutVM(nodename)
+	getallnic := azureClient.GetAllNics()
+	lb, err := azureClient.GetLbFromVMName(nodename)
+	if err != nil {
+		log.Printf("failed to get nic: %s\n", err)
+	}
 	responses := []autorest.Response{
 		vm.Response,
+		nic.Response,
+		lb.Response,
+		getallvm.Response().Response,
+		getallnic.Response().Response,
 
-		//azureClient.GetAllVM().Response().Response,
-		//azureClient.PutVM(nodename),
-		//azureClient.GetNicFromVMName(nodename).Response,
+		//putvm,
 		//azureClient.GetAllNics().Response().Response,
 	}
 	fmt.Println(responses)
+
 	for _, response := range responses {
 		if response.StatusCode != 200 {
 			log.Fatalf("Response did not return a StatusCode of 200. StatusCode: %d", response.StatusCode)
