@@ -35,8 +35,9 @@ func NewClient() (client AzureClient) {
 	return
 }
 
-//Get client for VM
+//GetVmClient return vmClient
 func GetVmClient() compute.VirtualMachinesClient {
+	//fmt.Println(config.SubscriptionID())
 	vmClient := compute.NewVirtualMachinesClient(config.SubscriptionID())
 	a, err := auth.NewAuthorizerFromEnvironment()
 	if err != nil {
@@ -74,7 +75,7 @@ func GetLbClient() network.LoadBalancersClient {
 // GetVM Returns a VirtualMachine object.
 func (az AzureClient) GetVM(ctx context.Context, nodename string) (compute.VirtualMachine, error) {
 	client := GetVmClient()
-	fmt.Printf("VM")
+	//	fmt.Printf("VM")
 	return client.Get(ctx, config.GroupName(), nodename, compute.InstanceView)
 }
 
@@ -97,7 +98,7 @@ func (az AzureClient) getNic(resource string, vmResource bool) (network.Interfac
 	client := GetNicClient()
 	if vmResource {
 		resource = az.getNicNameFromVMName(resource)
-		fmt.Println("Nic", resource)
+		//	fmt.Println("Nic", resource)
 	}
 	ctx, cancel := context.WithTimeout(context.Background(), 6000*time.Second)
 	defer cancel()
@@ -152,10 +153,11 @@ func getLastSegment(ID string) (string, error) {
 
 // GetAllVM Returns a ListResultPage of all VMs in the ResourceGroup of the Config
 func (az AzureClient) GetAllVM() (result compute.VirtualMachineListResultPage) {
+	client := GetVmClient()
 	ctx, cancel := context.WithTimeout(context.Background(), 6000*time.Second)
 	defer cancel()
-	fmt.Println("GetAllVM")
-	result, err := az.VirtualMachinesClient.List(ctx, config.GroupName())
+	//fmt.Println("GetAllVM")
+	result, err := client.List(ctx, config.GroupName())
 	if err != nil {
 		log.Panicf("failed to get all VMs: %v", err)
 	}
@@ -166,7 +168,7 @@ func (az AzureClient) GetAllVM() (result compute.VirtualMachineListResultPage) {
 func (az AzureClient) PutVM(nodename string) (res autorest.Response) {
 	ctx, cancel := context.WithTimeout(context.Background(), 6000*time.Second)
 	defer cancel()
-	fmt.Println("PutVM")
+	//fmt.Println("PutVM")
 	node, err := az.GetVM(ctx, nodename)
 	if err != nil {
 		log.Panic(err)
@@ -190,10 +192,10 @@ func (az AzureClient) PutVM(nodename string) (res autorest.Response) {
 
 // GetAllNics Returns a ListResultPage of all Interfaces in the ResourceGroup of the Config
 func (az AzureClient) GetAllNics() network.InterfaceListResultPage {
+	client := GetNicClient()
 	ctx, cancel := context.WithTimeout(context.Background(), 6000*time.Second)
 	defer cancel()
-
-	result, err := az.InterfacesClient.List(ctx, config.GroupName())
+	result, err := client.List(ctx, config.GroupName())
 	if err != nil {
 		log.Printf("failed to get all Interfaces; check HTTP_PROXY: %v", err)
 	}
