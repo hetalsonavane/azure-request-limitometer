@@ -4,12 +4,15 @@ import (
 	"fmt"
 	"log"
 	"os"
+	"os/signal"
 	"strings"
+	"syscall"
+	"time"
 
-	"github.com/Nuance-Mobility/azure-request-limitometer/pkg/common"
-	"github.com/Nuance-Mobility/azure-request-limitometer/pkg/outputs"
+	"github.com/cerence/azure-request-limitometer/pkg/common"
+	"github.com/cerence/azure-request-limitometer/pkg/outputs"
+
 	"github.com/golang/glog"
-
 	flag "github.com/spf13/pflag"
 )
 
@@ -23,8 +26,10 @@ var config = common.Conf
 var azureClient = common.Client
 
 var (
-	nodename = flag.String("node", "", "Valid node in the resource group to create compute queries. Environment Variable: NODE_NAME")
-	target   = flag.String("output", "pushgateway", "Target output for the limitometer, supported values are: [influxdb|pushgateway]")
+	nodename     = flag.String("node", "", "Valid node in the resource group to create compute queries. Environment Variable: NODE_NAME")
+	target       = flag.String("output", "pushgateway", "Target output for the limitometer, supported values are: [influxdb|pushgateway]")
+	mode         = flag.String("mode", "oneshot", "Operational mode for limitometer, supported values are: [oneshot|service]")
+	pollInterval = flag.Int("poll-interval", 60, "Only for 'service' mode: Poll interval for refreshing metrics in seconds")
 )
 
 func printUsage() {
@@ -43,6 +48,20 @@ func printHelp() {
 	}
 }
 
+func getValuesAndWriteToOutput(nodename string) {
+	log.Printf("Querying Azure API for remaining requests")
+	requestsRemaining := getRequestsRemaining(nodename)
+
+	log.Printf("Writing to database: %s", *target)
+	if strings.ToLower(*target) == "influxdb" {
+		outputs.WriteOutputInflux(requestsRemaining, "requestRemaining")
+	} else if strings.ToLower(*target) == "pushgateway" {
+		outputs.WriteOutputPushGateway(requestsRemaining)
+	} else {
+		glog.Exit("Did not provide a output through -output flag. Exiting.")
+	}
+}
+
 func main() {
 	flag.Parse()
 
@@ -57,14 +76,29 @@ func main() {
 	}
 
 	log.Printf("Starting limitometer with %s as target VM", *nodename)
-	requestsRemaining := getRequestsRemaining(*nodename)
 
-	log.Printf("Writing to database: %s", *target)
-	if strings.ToLower(*target) == "influxdb" {
-		outputs.WriteOutputInflux(requestsRemaining, "requestRemaining")
-	} else if strings.ToLower(*target) == "pushgateway" {
-		outputs.WriteOutputPushGateway(requestsRemaining)
+	if strings.ToLower(*mode) == "oneshot" {
+		log.Printf("Running in oneshot mode, will get remaining requests once and exit afterwards")
+		getValuesAndWriteToOutput(*nodename)
+		os.Exit(0)
+	} else if strings.ToLower(*mode) == "service" {
+		log.Printf("Running in service mode, will poll Azure API every %d seconds", *pollInterval)
+
+		// set up signal channel to manage SIGINT and SIGTERM
+		done := make(chan os.Signal, 1)
+		signal.Notify(done, os.Interrupt, syscall.SIGINT, syscall.SIGTERM)
+
+		go func() {
+			for {
+				getValuesAndWriteToOutput(*nodename)
+				time.Sleep(time.Duration(*pollInterval) * time.Second)
+			}
+		}()
+
+		<-done
+		log.Printf("Received signal to stop. Shutting down.")
+		os.Exit(0)
 	} else {
-		glog.Exit("Did not provide a output through -output flag. Exiting.")
+		glog.Exit("Did not provide a valid operations mode through -mode flag. Exiting.")
 	}
 }
