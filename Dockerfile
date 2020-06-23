@@ -1,19 +1,13 @@
-FROM golang:1.12-alpine as builder
+FROM golang:1.14-alpine as builder
 
 RUN apk update && apk add --no-cache git libc-dev gcc
 
-COPY . /go/src/github.com/Nuance-Mobility/azure-request-limitometer
+COPY . /build
 
-# Install dep
-RUN go get -u github.com/golang/dep/cmd/dep
+WORKDIR /build
+RUN go build -o limitometer ./cmd/limitometer
 
-WORKDIR /go/src/github.com/Nuance-Mobility/azure-request-limitometer
-RUN dep ensure
-
-WORKDIR /go
-RUN go build github.com/Nuance-Mobility/azure-request-limitometer/cmd/limitometer
-
-FROM alpine
+FROM alpine:3.12.0
 
 RUN apk update && \
     apk add --no-cache \
@@ -22,6 +16,6 @@ RUN apk update && \
 
 WORKDIR /root
 
-COPY --from=builder /go/limitometer limitometer
+COPY --from=builder /build/limitometer /bin/limitometer
 
-ENTRYPOINT ["./limitometer"]
+ENTRYPOINT ["/bin/limitometer"]
