@@ -68,9 +68,9 @@ func main() {
 		printUsage()
 	}
 
-	if err := config.ParseEnvironment(); err != nil {
-		log.Fatalf("failed to parse environment: %s\n", err)
-	}
+	//if err := config.ParseEnvironment(); err != nil {
+	//	log.Fatalf("failed to parse environment: %s\n", err)
+	//}
 
 	env, exists := os.LookupEnv("NODE_NAME")
 	if exists {
