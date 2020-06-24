@@ -36,6 +36,7 @@ type Config struct {
 	EnvironmentEndpoint string
 }
 
+//JsonData returns a azure config
 type JsonData struct {
 	Name              string
 	SubscriptionID    string
