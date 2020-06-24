@@ -9,9 +9,9 @@ import (
 	"syscall"
 	"time"
 
-	"github.com/cerence/azure-request-limitometer/pkg/common"
-	"github.com/cerence/azure-request-limitometer/pkg/outputs"
 	"github.com/golang/glog"
+	"github.com/hetalsonavane/azure-request-limitometer/pkg/common"
+	"github.com/hetalsonavane/azure-request-limitometer/pkg/outputs"
 	flag "github.com/spf13/pflag"
 )
 
