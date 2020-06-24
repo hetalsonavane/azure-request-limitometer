@@ -1,4 +1,6 @@
-module azure-request-limitometer
+
+module github.com/cerence/azure-request-limitometer
+
 
 go 1.14
 
