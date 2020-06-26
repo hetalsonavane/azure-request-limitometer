@@ -1,7 +1,11 @@
 package common
 
 import (
+	"azure-request-limitometer/internal/config"
+	"encoding/json"
 	"fmt"
+	"io/ioutil"
+	"net/http"
 	"os"
 
 	"github.com/Azure/go-autorest/autorest/azure"
@@ -11,7 +15,6 @@ const apiVersion = "2018-10-01"
 const azureInstanceMetadataEndpoint = "http://169.254.169.254/metadata/instance"
 
 // Queries the Azure Instance Metadata Service for the instance's compute metadata
-/*
 func retrieveComputeInstanceMetadata() (metadata ComputeInstanceMetadata, err error) {
 	c := &http.Client{}
 
@@ -40,27 +43,24 @@ func retrieveComputeInstanceMetadata() (metadata ComputeInstanceMetadata, err er
 
 	return
 }
-*/
-func retrieveenvdata() JsonData {
-
-	config := JsonData{
-		Name:              os.Getenv("NAME"),
-		SubscriptionID:    os.Getenv("SUBSCRIPTIONID"),
-		Location:          os.Getenv("LOCATION"),
-		ResourceGroupName: os.Getenv("RESOURCEGROUPNAME"),
-		Environment:       os.Getenv("ENVIRONMENT"),
-	}
-	return config
-}
 
 // LoadConfig Returns a Config struct created from Environment Variables
 func LoadConfig() (config Config) {
-	m := retrieveenvdata()
+	m, err := retrieveComputeInstanceMetadata()
+	if err != nil {
+		err = fmt.Errorf("unable to load the config: %v", err)
+	}
 
 	env, err := azure.EnvironmentFromName(m.Environment)
 	if err != nil {
 		err = fmt.Errorf("Could not get environment object from metadata name: %v", err)
 	}
+
+	os.Setenv("AZURE_GROUP_NAME", m.ResourceGroupName)
+	os.Setenv("AZURE_LOCATION_DEFAULT", m.Location)
+	os.Setenv(" AZURE_SUBSCRIPTION_ID", m.SubscriptionID)
+	os.Setenv("AZURE_USE_DEVICEFLOW", "true")
+	os.Setenv("AZURE_SAMPLES_KEEP_RESOURCES", "true")
 	config = Config{
 		VMName:              m.Name,
 		SubscriptionID:      m.SubscriptionID,
@@ -68,6 +68,19 @@ func LoadConfig() (config Config) {
 		ResourceGroup:       m.ResourceGroupName,
 		AzureEnvironment:    m.Environment,
 		EnvironmentEndpoint: env.ResourceManagerEndpoint,
+	}
+
+	return
+}
+
+//EnvLoadConfig return object which load env config
+func EnvLoadConfig() (envconfig Config) {
+
+	envconfig = Config{
+
+		SubscriptionID: config.SubscriptionID(),
+		Location:       config.Location(),
+		ResourceGroup:  config.GroupName(),
 	}
 
 	return

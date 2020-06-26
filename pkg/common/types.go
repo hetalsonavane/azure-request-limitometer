@@ -35,11 +35,3 @@ type Config struct {
 	AzureEnvironment    string
 	EnvironmentEndpoint string
 }
-
-type JsonData struct {
-	Name              string
-	SubscriptionID    string
-	Location          string
-	ResourceGroupName string
-	Environment       string
-}
