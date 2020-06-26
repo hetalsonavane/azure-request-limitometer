@@ -9,13 +9,16 @@ import (
 	"syscall"
 	"time"
 
-	"github.com/cerence/azure-request-limitometer/pkg/common"
-	"github.com/cerence/azure-request-limitometer/pkg/outputs"
+	"azure-request-limitometer/internal/config"
+	"azure-request-limitometer/pkg/common"
+	"azure-request-limitometer/pkg/outputs"
+
 	"github.com/golang/glog"
 	flag "github.com/spf13/pflag"
 )
 
 var azureClient = common.Client
+var configload = common.Conf
 
 const (
 	cliName        = "limitometer"
@@ -28,6 +31,7 @@ var (
 	target       = flag.String("output", "pushgateway", "Target output for the limitometer, supported values are: [influxdb|pushgateway]")
 	mode         = flag.String("mode", "oneshot", "Operational mode for limitometer, supported values are: [oneshot|service]")
 	pollInterval = flag.Int("poll-interval", 60, "Only for 'service' mode: Poll interval for refreshing metrics in seconds")
+	configBy     = flag.String("configuration", "loadconfig", "To decide from where to load config, supported values are: [loadconfig|environment]")
 )
 
 func printUsage() {
@@ -68,13 +72,22 @@ func main() {
 		printUsage()
 	}
 
-	if err := config.ParseEnvironment(); err != nil {
-		log.Fatalf("failed to parse environment: %s\n", err)
-	}
-
 	env, exists := os.LookupEnv("NODE_NAME")
 	if exists {
 		*nodename = env
+	}
+
+	if strings.ToLower(*configBy) == "loadconfig" {
+		common.Conf = common.LoadConfig()
+		common.Client = common.NewClient("loadconfig")
+	} else if strings.ToLower(*configBy) == "environment" {
+		if err := config.ParseEnvironment(); err != nil {
+			log.Fatalf("failed to parse environment: %s\n", err)
+		}
+		common.Client = common.NewClient("environment")
+
+	} else {
+		glog.Exit("Did not provide a output through -output flag. Exiting.")
 	}
 
 	log.Printf("Starting limitometer with %s as target VM", *nodename)

@@ -2,7 +2,6 @@ package main
 
 import (
 	"context"
-	"fmt"
 	"log"
 	"net/http"
 	"regexp"
@@ -41,23 +40,23 @@ func getRequestsRemaining(nodename string) (requestsRemaining map[string]int) {
 	}
 
 	GetAllVM := azureClient.GetAllVM()
-	//putvm := azureClient.PutVM(nodename)
+	//PutVM := azureClient.PutVM(nodename)
+	//fmt.Println(PutVM)
 	GetAllNic := azureClient.GetAllNics()
 	Getlb, err := azureClient.GetAllLoadBalancer()
 	if err != nil {
 		log.Printf("failed to get nic: %s\n", err)
 	}
+
 	responses := []autorest.Response{
 
 		Getvm.Response,
 		Getnic.Response,
-		Getlb.Response().Response,
 		GetAllVM.Response().Response,
+		Getlb.Response().Response,
 		GetAllNic.Response().Response,
-		//putvm,
+		//PutVM,
 	}
-	fmt.Println(responses)
-
 	for _, response := range responses {
 		if response.StatusCode != 200 {
 			log.Fatalf("Response did not return a StatusCode of 200. StatusCode: %d", response.StatusCode)
