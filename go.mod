@@ -9,7 +9,6 @@ require (
 	github.com/Azure/go-autorest/autorest/to v0.4.0 // indirect
 	github.com/Azure/go-autorest/autorest/validation v0.3.0 // indirect
 	github.com/golang/glog v0.0.0-20160126235308-23def4e6c14b
-	github.com/hetalsonavane/azure-request-limitometer v0.0.0-20200624102419-6b2358ab5938 // indirect
 	github.com/influxdata/influxdb v1.8.0
 	github.com/marstr/randname v0.0.0-20200428202425-99aca53a2176
 	github.com/prometheus/client_golang v1.6.0
