@@ -1,6 +1,6 @@
 package common
 
-// Conf Loaded subscriptionId
+//Conf Loaded Configuration from azure.json
 var Conf Config
 
 // Client Authorized Azure Client
