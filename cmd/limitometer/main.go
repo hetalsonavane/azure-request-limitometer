@@ -18,7 +18,6 @@ import (
 )
 
 var azureClient = common.Client
-var configload = common.Conf
 
 const (
 	cliName        = "limitometer"
@@ -75,6 +74,10 @@ func main() {
 	env, exists := os.LookupEnv("NODE_NAME")
 	if exists {
 		*nodename = env
+	}
+	confval, exists := os.LookupEnv("CONFIG_VALUE")
+	if exists {
+		*configBy = confval
 	}
 
 	if strings.ToLower(*configBy) == "loadconfig" {
