@@ -27,7 +27,7 @@ type AzureClient struct {
 // NewClient Initialized an authorized Azure client
 func NewClient(configMode string) (client AzureClient) {
 	var configload Config
-	if configMode == "loadconfig" {
+	if configMode == "metadata" {
 		configload = LoadConfig()
 	} else if configMode == "environment" {
 		configload = EnvLoadConfig()

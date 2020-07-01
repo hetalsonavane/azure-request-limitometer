@@ -30,7 +30,7 @@ var (
 	target       = flag.String("output", "pushgateway", "Target output for the limitometer, supported values are: [influxdb|pushgateway]")
 	mode         = flag.String("mode", "oneshot", "Operational mode for limitometer, supported values are: [oneshot|service]")
 	pollInterval = flag.Int("poll-interval", 60, "Only for 'service' mode: Poll interval for refreshing metrics in seconds")
-	configSource = flag.String("config", "loadconfig", "To decide from where to load config, supported values are: [loadconfig|environment]")
+	configSource = flag.String("config", "metadata", "To decide from where to load config, supported values are: [metadata|environment]")
 )
 
 func printUsage() {
@@ -80,8 +80,8 @@ func main() {
 		*metadata = confval
 	}
 
-	if strings.ToLower(*configSource) == "loadconfig" {
-		common.Client = common.NewClient("loadconfig")
+	if strings.ToLower(*configSource) == "metadata" {
+		common.Client = common.NewClient("metadata")
 	} else if strings.ToLower(*configSource) == "environment" {
 		if err := config.ParseEnvironment(); err != nil {
 			log.Fatalf("failed to parse environment: %s\n", err)

@@ -1,7 +1,7 @@
 package config
 
 /*
-This package is part of azure-sdk-for-go-samples
+This file has been adapted from azure-sdk-for-go-samples licensed under the MIT license
 please refer  https://github.com/Azure-Samples/azure-sdk-for-go-samples for more info
 */
 import (
