@@ -82,7 +82,7 @@ func GetLbClient(configload Config) network.LoadBalancersClient {
 // GetVM Returns a VirtualMachine object.
 func (az AzureClient) GetVM(ctx context.Context, nodename string) (compute.VirtualMachine, error) {
 	client := GetVMClient(Client.config)
-	return client.Get(ctx,Client.config.ResourceGroup, nodename, compute.InstanceView)
+	return client.Get(ctx, Client.config.ResourceGroup, nodename, compute.InstanceView)
 }
 
 // GetAllLoadBalancer return info on a loadbalancer
@@ -169,28 +169,28 @@ func (az AzureClient) GetAllVM() (result compute.VirtualMachineListResultPage) {
 
 // PutVM returns the Virtual Machine object
 func (az AzureClient) PutVM(nodename string) (res autorest.Response) {
+	client := GetVMClient(Client.config)
 	ctx, cancel := context.WithTimeout(context.Background(), 6000*time.Second)
 	defer cancel()
-	fmt.Println("PutVm start")
+
 	node, err := az.GetVM(ctx, nodename)
 	if err != nil {
 		log.Panic(err)
 	}
-	fmt.Println("Putvm Middle")
-	req, err := az.VirtualMachinesClient.CreateOrUpdatePreparer(ctx,Client.config.ResourceGroup, nodename, node)
+	req, err := client.CreateOrUpdatePreparer(ctx, Client.config.ResourceGroup, nodename, node)
 	if err != nil {
-		log.Panic(err)
+		err = autorest.NewErrorWithError(err, "compute.VirtualMachineScaleSetsClient", "CreateOrUpdate", nil, "Failure preparing request")
+		return
 	}
-	fmt.Println("Actual Putvm req",req)
+
 	var result *http.Response
-	result, err = autorest.SendWithSender(az.VirtualMachinesClient, req,
-		azure.DoRetryWithRegistration(az.VirtualMachinesClient.Client))
+	result, err = autorest.SendWithSender(client, req,
+		azure.DoRetryWithRegistration(client.Client))
 	err = autorest.Respond(result, azure.WithErrorUnlessStatusCode(http.StatusOK, http.StatusCreated))
 	if err != nil {
 		log.Panic(err)
 	}
 	res.Response = result
-
 	return
 }
 
@@ -199,7 +199,7 @@ func (az AzureClient) GetAllNics() network.InterfaceListResultPage {
 	client := GetNicClient(Client.config)
 	ctx, cancel := context.WithTimeout(context.Background(), 6000*time.Second)
 	defer cancel()
-	result, err := client.List(ctx,Client.config.ResourceGroup)
+	result, err := client.List(ctx, Client.config.ResourceGroup)
 	if err != nil {
 		log.Printf("failed to get all Interfaces; check HTTP_PROXY: %v", err)
 	}

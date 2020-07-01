@@ -40,8 +40,7 @@ func getRequestsRemaining(nodename string) (requestsRemaining map[string]int) {
 	}
 
 	GetAllVM := azureClient.GetAllVM()
-	//PutVM := azureClient.PutVM(nodename)
-	//fmt.Println(PutVM)
+	PutVM := azureClient.PutVM(nodename)
 	GetAllNic := azureClient.GetAllNics()
 	Getlb, err := azureClient.GetAllLoadBalancer()
 	if err != nil {
@@ -55,7 +54,7 @@ func getRequestsRemaining(nodename string) (requestsRemaining map[string]int) {
 		GetAllVM.Response().Response,
 		Getlb.Response().Response,
 		GetAllNic.Response().Response,
-		//PutVM,
+		PutVM,
 	}
 	for _, response := range responses {
 		if response.StatusCode != 200 {
