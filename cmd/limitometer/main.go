@@ -77,7 +77,7 @@ func main() {
 	}
 	confval, exists := os.LookupEnv("LIMITOMETER_CONFIG")
 	if exists {
-		*metadata = confval
+		*configSource = confval
 	}
 
 	if strings.ToLower(*configSource) == "metadata" {
