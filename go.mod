@@ -1,4 +1,4 @@
-module azure-request-limitometer
+module github.com/cerence/azure-request-limitometer
 
 go 1.14
 
@@ -6,6 +6,8 @@ require (
 	github.com/Azure/azure-sdk-for-go v42.3.0+incompatible
 	github.com/Azure/go-autorest/autorest v0.10.2
 	github.com/Azure/go-autorest/autorest/azure/auth v0.4.2
+	github.com/Azure/go-autorest/autorest/to v0.4.0 // indirect
+	github.com/Azure/go-autorest/autorest/validation v0.3.0 // indirect
 	github.com/golang/glog v0.0.0-20160126235308-23def4e6c14b
 	github.com/hetalsonavane/azure-request-limitometer v0.0.0-20200624102419-6b2358ab5938 // indirect
 	github.com/influxdata/influxdb v1.8.0

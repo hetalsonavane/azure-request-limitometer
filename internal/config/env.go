@@ -1,5 +1,9 @@
 package config
 
+/*
+This package is part of azure-sdk-for-go-samples
+please refer  https://github.com/Azure-Samples/azure-sdk-for-go-samples for more info
+*/
 import (
 	"log"
 	"os"

@@ -1,5 +1,9 @@
 package config
 
+/*
+This package is part of azure-sdk-for-go-samples
+please refer  https://github.com/Azure-Samples/azure-sdk-for-go-samples for more info
+*/
 import (
 	"bytes"
 	"fmt"
@@ -48,13 +52,12 @@ func SubscriptionID() string {
 	return subscriptionID
 }
 
-// deprecated: use DefaultLocation() instead
-// Location returns the Azure location to be utilized.
+//Location returns the Azure location to be utilized.
 func Location() string {
 	return locationDefault
 }
 
-// DefaultLocation() returns the default location wherein to create new resources.
+//DefaultLocation() returns the default location wherein to create new resources.
 // Some resource types are not available in all locations so another location might need
 // to be chosen.
 func DefaultLocation() string {
@@ -95,7 +98,7 @@ func KeepResources() bool {
 	return keepResources
 }
 
-// UserAgent() specifies a string to append to the agent identifier.
+//UserAgent() specifies a string to append to the agent identifier.
 func UserAgent() string {
 	if len(userAgent) > 0 {
 		return userAgent

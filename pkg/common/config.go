@@ -1,12 +1,13 @@
 package common
 
 import (
-	"azure-request-limitometer/internal/config"
 	"encoding/json"
 	"fmt"
 	"io/ioutil"
 	"net/http"
 	"os"
+
+	"github.com/cerence/azure-request-limitometer/internal/config"
 
 	"github.com/Azure/go-autorest/autorest/azure"
 )
