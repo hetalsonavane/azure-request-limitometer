@@ -75,7 +75,7 @@ func main() {
 	if exists {
 		*nodename = env
 	}
-	confval, exists := os.LookupEnv("CONFIGSOURCE")
+	confval, exists := os.LookupEnv("LIMITOMETER_CONFIG")
 	if exists {
 		*metadata = confval
 	}
