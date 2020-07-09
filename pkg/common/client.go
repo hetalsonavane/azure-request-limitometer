@@ -13,7 +13,6 @@ import (
 	"github.com/Azure/go-autorest/autorest"
 	"github.com/Azure/go-autorest/autorest/azure"
 	"github.com/Azure/go-autorest/autorest/azure/auth"
-	"github.com/golang/glog"
 )
 
 // AzureClient This is an authorized client for Azure communication.
@@ -49,7 +48,7 @@ func GetVMClient(configload Config) compute.VirtualMachinesClient {
 	vmClient := compute.NewVirtualMachinesClient(configload.SubscriptionID)
 	a, err := auth.NewAuthorizerFromEnvironment()
 	if err != nil {
-		glog.Fatalf("failed to create authorizer from environment: %s\n", err)
+		log.Panicf("failed to create authorizer from environment: %s\n", err)
 	}
 	vmClient.Authorizer = a
 	vmClient.AddToUserAgent("azure-request-limitometer-vm")
@@ -61,7 +60,7 @@ func GetNicClient(configload Config) network.InterfacesClient {
 	nicClient := network.NewInterfacesClient(configload.SubscriptionID)
 	a, err := auth.NewAuthorizerFromEnvironment()
 	if err != nil {
-		glog.Fatalf("failed to create authorizer from environment: %s\n", err)
+		log.Panicf("failed to create authorizer from environment: %s\n", err)
 	}
 	nicClient.Authorizer = a
 	nicClient.AddToUserAgent("azure-request-limitometer-Nic")
@@ -73,7 +72,7 @@ func GetLbClient(configload Config) network.LoadBalancersClient {
 	lbClient := network.NewLoadBalancersClient(configload.SubscriptionID)
 	a, err := auth.NewAuthorizerFromEnvironment()
 	if err != nil {
-		glog.Fatalf("failed to create authorizer from environment: %s\n", err)
+		log.Panicf("failed to create authorizer from environment: %s\n", err)
 	}
 	lbClient.Authorizer = a
 	lbClient.AddToUserAgent("azure-request-limitometer-Lb")
@@ -114,18 +113,18 @@ func (az AzureClient) getNic(resource string, vmResource bool) (network.Interfac
 func (az AzureClient) getNicNameFromVMName(nodename string) string {
 	vm, error := az.GetVM(context.Background(), nodename)
 	if error != nil {
-		glog.Fatalf("failed to getVM: %v", error)
+		log.Panicf("failed to getVM: %v", error)
 	}
 	primaryNicID, err := getPrimaryInterfaceID(vm)
 
 	if err != nil {
-		glog.Fatalf("failed to getPrimaryInterfaceID from VM: %v", err)
+		log.Panicf("failed to getPrimaryInterfaceID from VM: %v", err)
 	}
 
 	nicName, err := getLastSegment(primaryNicID)
 
 	if err != nil {
-		glog.Fatalf("failed to nic name from nicID: %v", err)
+		log.Panicf("failed to nic name from nicID: %v", err)
 	}
 
 	return nicName
@@ -202,7 +201,7 @@ func (az AzureClient) GetAllNics() network.InterfaceListResultPage {
 	defer cancel()
 	result, err := client.List(ctx, Client.config.ResourceGroup)
 	if err != nil {
-		glog.Fatalf("failed to get all Interfaces; check HTTP_PROXY: %v", err)
+		log.Panicf("failed to get all Interfaces; check HTTP_PROXY: %v", err)
 	}
 
 	return result
