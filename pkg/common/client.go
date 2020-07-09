@@ -52,7 +52,7 @@ func GetVMClient(configload Config) compute.VirtualMachinesClient {
 		glog.Fatalf("failed to create authorizer from environment: %s\n", err)
 	}
 	vmClient.Authorizer = a
-	vmClient.AddToUserAgent("sdk-samples")
+	vmClient.AddToUserAgent("azure-request-limitometer-vm")
 	return vmClient
 }
 
@@ -64,7 +64,7 @@ func GetNicClient(configload Config) network.InterfacesClient {
 		glog.Fatalf("failed to create authorizer from environment: %s\n", err)
 	}
 	nicClient.Authorizer = a
-	nicClient.AddToUserAgent("sdk-samples")
+	nicClient.AddToUserAgent("azure-request-limitometer-Nic")
 	return nicClient
 }
 
@@ -76,7 +76,7 @@ func GetLbClient(configload Config) network.LoadBalancersClient {
 		glog.Fatalf("failed to create authorizer from environment: %s\n", err)
 	}
 	lbClient.Authorizer = a
-	lbClient.AddToUserAgent("sdk-samples")
+	lbClient.AddToUserAgent("azure-request-limitometer-Lb")
 	return lbClient
 }
 
